@@ -1,19 +1,12 @@
-import { getReview, getSlugs } from "@/lib/review";
+
+import AllComments from "@/components/Comment";
+import CommentForm from "@/components/commentForm";
+import { getReview } from "@/lib/review";
+import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
+import { notFound } from "next/navigation";
 
-
-export function generateMetadata({
-  params: { slug },
-}: {
-  params: { slug: string };
-}): { title: string } {
-  console.log("params", slug);
-  return {
-    title: slug,
-  };
-}
-
-
+export const dynamic = "force-dynamic"
 // Define the type for the props
 interface ReviewPageProps {
   params: {
@@ -24,34 +17,60 @@ interface ReviewPageProps {
 // Define the type for the review
 interface Review {
   title: string;
-  date: string;
-  image: string;
+  image_url: string;
   body: string;
 }
 
+// Define the type for the review page params
 interface ReviewPageParams {
   slug: string;
 }
 
-export async function generateStaticParams(): Promise<ReviewPageParams[]> {
-  const slugs = await getSlugs();
-  return slugs.map((slug) => ({ slug }));
+export function generateMetadata({
+  params: { slug },
+}: {
+  params: { slug: string };
+}): { title: string } {
+  return {
+    title: slug,
+  };
 }
+
 
 export default async function ReviewPage({
   params: { slug },
 }: ReviewPageProps) {
-  const review: Review = await getReview(slug);
+  const review = await getReview(slug);
+  if (!review) {
+    notFound();
+  }
+  if (!review) {
+    return <div>Review not found</div>;
+
+  }
 
   return (
     <>
       <h1 className="font-bold">{review.title}</h1>
-      <h2 className="mb-3">{review.date}</h2>
-      <Image src={review.image} alt="" height="360" width="640" />
+      <Image
+        priority
+        src={review.image_url}
+        alt={review.title}
+        height="360"
+        width="640"
+      />
       <article
         className="pt-3 max-w-screen-sm"
         dangerouslySetInnerHTML={{ __html: review.body }}
       />
+      <section className="border-dashed border-t mt-4 p-4 bg-green-50 rounded-md shadow-lg max-w-screen-sm">
+        <h2 className="font-bold text-xl flex items-center gap-2 mb-4 text-green-700">
+          <ChatBubbleBottomCenterIcon className="h-5 w-5 text-green-700" />
+          Comments
+        </h2>
+        <CommentForm title={review.title} slug={review.slug} />
+        <AllComments slug={review.slug} />
+      </section>
     </>
   );
 }

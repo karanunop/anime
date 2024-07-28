@@ -1,33 +1,42 @@
-import Headings from "@/components/Headings"
-
-import { getFeaturedReview } from "@/lib/review";
-import Image from "next/image";
+import { getReviews } from "@/lib/review";
 import Link from "next/link";
+import Image from "next/image";
 
-export default async function Home() {
-  const review = await getFeaturedReview()
-  
+const Home = async () => {
+  const reviews = await getReviews('3',1);
+
+  if (!reviews) {
+    return <div>No featured review found</div>;
+  }
+
   return (
     <>
-    
-      <Headings>Best Anime</Headings>
-      <p className="pb-3">
-        Only the best anime, reviewed for you.
-      </p>
-      <div className="bg-white border rounded shadow w-80
-                      hover:shadow-xl sm:w-full">
-        <Link href={`/reviews/${review.slug}`}
-          className="flex flex-col sm:flex-row">
-          <Image src={review.image} alt=""
-            width="320" height="180"
-            className="rounded-t sm:rounded-l sm:rounded-r-none"
-          />
-          <h2 className="font-orbitron font-semibold py-1 text-center sm:px-2">
-            {review.title}
-          </h2>
-        </Link>
-      </div>
+      <h1 className="font-bold">Best Anime</h1>
+      <p className="o-oo">Only the best anime, reviewed for you.</p>
+      <ul className="py-4 flex flex-row flex-wrap gap-3">
+        {reviews.length > 0 ? (
+          reviews.map((review) => (
+            <li
+              key={review.mal_id}
+              className="bg-white px-4 py-3 border rounded shadow w-80 hover:shadow-xl"
+            >
+              <Link href={`/reviews/${review.slug}`}>
+                <Image
+                  src={review.image_url}
+                  alt={review.title}
+                  width="320"
+                  height="180"
+                />
+                <h1 className="text-center font-mono">{review.title}</h1>
+              </Link>
+            </li>
+          ))
+        ) : (
+          <li>No reviews found.</li>
+        )}
+      </ul>
     </>
   );
-      
-}
+};
+
+export default Home;

@@ -1,4 +1,5 @@
-import Link from "next/link";
+
+import Navlink from "./Navlink";
 
 export default function NavBar() {
   return (
@@ -6,23 +7,13 @@ export default function NavBar() {
       <nav className="flex justify-center items-center h-16">
         <ul className="flex gap-4 text-2xl">
           <li>
-            <Link href="/" className="text-orange-800 hover:underline">
-              Home
-            </Link>
+            <Navlink href="/" prefetch={true}>Home</Navlink>
           </li>
           <li>
-            <Link href="/reviews" className="text-orange-800 hover:underline">
-              Reviews
-            </Link>
+            <Navlink href="/reviews" prefetch={true}>Reviews</Navlink>
           </li>
           <li>
-            <Link
-              href="/about"
-              prefetch={false}
-              className="text-orange-800 hover:underline"
-            >
-              About
-            </Link>
+            <Navlink href="/about" prefetch={false}>About</Navlink>
           </li>
         </ul>
       </nav>
