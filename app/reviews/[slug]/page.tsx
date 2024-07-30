@@ -7,21 +7,19 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic"
-// Define the type for the props
+
 interface ReviewPageProps {
   params: {
     slug: string;
   };
 }
 
-// Define the type for the review
 interface Review {
   title: string;
   image_url: string;
   body: string;
 }
 
-// Define the type for the review page params
 interface ReviewPageParams {
   slug: string;
 }
@@ -41,12 +39,9 @@ export default async function ReviewPage({
   params: { slug },
 }: ReviewPageProps) {
   const review = await getReview(slug);
-  if (!review) {
-    notFound();
-  }
-  if (!review) {
-    return <div>Review not found</div>;
 
+  if (!review) {
+    notFound(); // This will throw and prevent further code execution
   }
 
   return (
@@ -68,9 +63,10 @@ export default async function ReviewPage({
           <ChatBubbleBottomCenterIcon className="h-5 w-5 text-green-700" />
           Comments
         </h2>
-        <CommentForm title={review.title} slug={review.slug} />
-        <AllComments slug={review.slug} />
+        <CommentForm title={review.title} slug={slug} />
+        <AllComments slug={slug} />
       </section>
     </>
   );
 }
+

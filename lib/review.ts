@@ -1,5 +1,4 @@
-import "server-only"
-
+import "server-only";
 import axios from "axios";
 
 const generateSlug = (title: string): string => {
@@ -38,104 +37,59 @@ export interface Review {
   slug: string;
   body: string;
 }
-export async function getReview(
 
-  slug: string
-): Promise<Review | null | undefined> {
-  const options = {
-    method: "GET",
-    url: "https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=1&limit=25",
-  };
-
+const fetchData = async (url: string): Promise<ApiResponse> => {
   try {
-    const response = await axios.request<ApiResponse>(options);
-    const review = response.data.data
-      .map((item) => ({
-        title: item.title,
-        image_url: item.images.jpg.large_image_url || item.images.jpg.image_url,
-        slug: generateSlug(item.title),
-        body: item.synopsis,
-      }))
-      .find((review) => review.slug === slug);
-    if (!review) {
-      return null;
-    }
-    return review;
+    const response = await axios.get<ApiResponse>(url);
+    return response.data;
   } catch (error) {
-    console.error(error);
-    return undefined;
-  }
-}
-
-export const getReviews = async (
-  pageSize: string,
-  page: number
-): Promise<GetReviews[]> => {
-  const options = {
-    method: "GET",
-    url: `https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=${page}&limit=${pageSize}`,
-  };
-
-  try {
-    const response = await axios.request<ApiResponse>(options);
-    const data =  response.data.data.map((item) => ({
-      mal_id: item.mal_id,
-      title: item.title,
-      image_url: item.images.jpg.image_url,
-      slug: generateSlug(item.title),
-    }));
-    return data
-  } catch (error) {
-    console.error(error);
-    return [];
+    console.error(`Error fetching data from ${url}`, error);
+    throw new Error("Failed to fetch data");
   }
 };
 
+export async function getReview(slug: string): Promise<Review | null> {
+  const url = "https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=1&limit=25";
+  const data = await fetchData(url);
+
+  const review = data.data
+    .map((item) => ({
+      title: item.title,
+      image_url: item.images.jpg.large_image_url || item.images.jpg.image_url,
+      slug: generateSlug(item.title),
+      body: item.synopsis,
+    }))
+    .find((review) => review.slug === slug);
+
+  return review || null;
+}
+
+export const getReviews = async (pageSize: string, page: number): Promise<GetReviews[]> => {
+  const url = `https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=${page}&limit=${pageSize}`;
+  const data = await fetchData(url);
+
+  return data.data.map((item) => ({
+    mal_id: item.mal_id,
+    title: item.title,
+    image_url: item.images.jpg.image_url,
+    slug: generateSlug(item.title),
+  }));
+};
+
 export async function getSlugs(): Promise<string[]> {
-  const options = {
-    method: "GET",
-    url: "https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=1&limit=25",
-  };
+  const url = "https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=1&limit=25";
+  const data = await fetchData(url);
 
-  try {
-    const response = await axios.request<ApiResponse>(options);
-    const reviews = response.data.data.map((item) => ({
-      mal_id: item.mal_id,
-      title: item.title,
-      image_url: item.images.jpg.image_url,
-      slug: generateSlug(item.title),
-      body: item.synopsis,
-    }));
-
-    const slugs = reviews.map((review) => review.slug);
-    return slugs;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
+  return data.data.map((item) => generateSlug(item.title));
 }
 
+export async function getSearchableReviews(): Promise<SearchableReview[]> {
+  const url = "https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=1&limit=20";
+  const data = await fetchData(url);
 
-
-export async function getSearchableReviews() {
-  const options = {
-    method: "GET",
-    url: "https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=1&limit=20",
-  };
-
-  try {
-    const response = await axios.request<ApiResponse>(options);
-    const reviews = response.data.data.map((item) => ({
-      mal_id: item.mal_id,
-      title: item.title,
-      image_url: item.images.jpg.image_url,
-      slug: generateSlug(item.title),
-      body: item.synopsis,
-    }));
-
-    return reviews;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
+  return data.data.map((item) => ({
+    title: item.title,
+    slug: generateSlug(item.title),
+  }));
 }
+
