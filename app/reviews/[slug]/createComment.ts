@@ -1,6 +1,6 @@
 "use server";
 
-import createComments from "@/lib/comment";
+import {createComments} from "@/lib/comment";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
