@@ -1,22 +1,16 @@
-import { GetServerSidePropsContext } from "next";
 import { getComments } from "@/lib/comment";
 import { UserCircleIcon } from "@heroicons/react/20/solid";
+import { useEffect } from "react";
 
-interface Comment {
-  id: string;
-  name: string;
-  comment: string;
+interface CommentFormProps {
+  slug: string;
 }
 
-interface AllCommentsProps {
-  comments: Comment[];
-}
-
-export default function AllComments({ comments }: AllCommentsProps) {
-  if (!comments || comments.length === 0) {
+export default async function AllComments({ slug }: CommentFormProps) {
+  const comments = await getComments(slug);
+  if (comments.length === 0) {
     return <p className="italic mt-3">No comments yet.</p>;
   }
-
   return (
     <ul className="border mt-3 rounded">
       {comments.map((comment) => (
@@ -35,14 +29,4 @@ export default function AllComments({ comments }: AllCommentsProps) {
   );
 }
 
-// Server-side rendering function
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { slug } = context.params!;
-  const comments = await getComments(slug as string);
 
-  return {
-    props: {
-      comments: comments || [], // Ensure comments is an array
-    },
-  };
-}
