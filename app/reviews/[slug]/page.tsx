@@ -1,12 +1,9 @@
-
 import AllComments from "@/components/Comment";
 import CommentForm from "@/components/commentForm";
 import { getReview } from "@/lib/review";
 import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-
-// export const dynamic = "force-dynamic"
 
 interface ReviewPageProps {
   params: {
@@ -20,28 +17,14 @@ interface Review {
   body: string;
 }
 
-interface ReviewPageParams {
-  slug: string;
-}
-
-// export function generateMetadata({
-//   params: { slug },
-// }: {
-//   params: { slug: string };
-// }): { title: string } {
-//   return {
-//     title: slug,
-//   };
-// }
-
-
 export default async function ReviewPage({
   params: { slug },
 }: ReviewPageProps) {
-  const review = await getReview(slug);
+  const review: Review | null = await getReview(slug);
 
   if (!review) {
     notFound(); // This will throw and prevent further code execution
+    return null; // Return null to satisfy TypeScript's return type expectations
   }
 
   return (
@@ -51,8 +34,8 @@ export default async function ReviewPage({
         priority
         src={review.image_url}
         alt={review.title}
-        height="360"
-        width="640"
+        height={360}
+        width={640}
       />
       <article
         className="pt-3 max-w-screen-sm"
@@ -69,4 +52,3 @@ export default async function ReviewPage({
     </>
   );
 }
-

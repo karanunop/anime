@@ -1,12 +1,12 @@
 import { getComments } from "@/lib/comment";
 import { UserCircleIcon } from "@heroicons/react/20/solid";
-import { useEffect } from "react";
+
 
 interface CommentFormProps {
   slug: string;
 }
 
-export default async function AllComments({ slug }: CommentFormProps) {
+export default async function AllComments({slug}:CommentFormProps) {
   const comments = await getComments(slug);
   if (comments.length === 0) {
     return <p className="italic mt-3">No comments yet.</p>;
