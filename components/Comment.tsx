@@ -12,7 +12,7 @@ export default async function CommentList({ slug }: CommentListProps) {
   }
   return (
     <ul className="border mt-3 rounded">
-      {comments.map((comment) => (
+      {comments.map((comment:any) => (
         <li
           key={comment.id}
           className="border-b px-3 py-2 last:border-none odd:bg-orange-100"
