@@ -1,12 +1,11 @@
+import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { getComments } from "@/lib/comment";
-import { UserCircleIcon } from "@heroicons/react/20/solid";
 
-
-interface CommentFormProps {
+export interface CommentListProps {
   slug: string;
 }
 
-export default async function AllComments({slug}:CommentFormProps) {
+export default async function CommentList({ slug }: CommentListProps) {
   const comments = await getComments(slug);
   if (comments.length === 0) {
     return <p className="italic mt-3">No comments yet.</p>;
@@ -28,5 +27,3 @@ export default async function AllComments({slug}:CommentFormProps) {
     </ul>
   );
 }
-
-
