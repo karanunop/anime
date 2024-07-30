@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 const Home = async () => {
-  const reviews = await getReviews('3',1);
+  const reviews = await getReviews('1',1);
 
   if (!reviews) {
     return <div>No featured review found</div>;

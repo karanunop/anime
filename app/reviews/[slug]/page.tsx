@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-
 import { getReview, getSlugs } from "@/lib/review";
 import Share from "@/components/Share";
+
+interface Review {
+  title: string;
+  image_url: string;
+  body: string;
+}
 
 interface ReviewPageParams {
   slug: string;
@@ -12,33 +17,39 @@ interface ReviewPageParams {
 interface ReviewPageProps {
   params: ReviewPageParams;
 }
+const dynamic = "force-dynamic";
 
-export async function generateStaticParams(): Promise<ReviewPageParams[]> {
-  const slugs = await getSlugs();
-  // console.log('[ReviewPage] generateStaticParams:', slugs);
-  return slugs.map((slug) => ({ slug }));
-}
+// Function to generate static parameters for static site generation
+// export async function generateStaticParams(): Promise<ReviewPageParams[]> {
+//   const slugs = await getSlugs();
+//   return slugs.map((slug) => ({ slug }));
+// }
 
-export async function generateMetadata({
-  params: { slug },
-}: ReviewPageProps): Promise<Metadata> {
-  const review = await getReview(slug);
-  if (!review) {
-    notFound();
-  }
-  return {
-    title: review.title,
-  };
-}
+// // Function to generate metadata for each review page
+// export async function generateMetadata({
+//   params: { slug },
+// }: ReviewPageProps): Promise<Metadata> {
+//   const review: Review | null = await getReview(slug);
+//   if (!review) {
+//     notFound();
+//   }
+//   return {
+//     title: review.title,
+//   };
+// }
 
+// Component for rendering the review page
 export default async function ReviewPage({
   params: { slug },
 }: ReviewPageProps) {
   console.log("[ReviewPage] rendering", slug);
-  const review = await getReview(slug);
+  const review: Review | null = await getReview(slug);
+
   if (!review) {
     notFound();
+    return null; // Ensure we return null after notFound
   }
+
   return (
     <>
       <h1>{review.title}</h1>
@@ -48,16 +59,17 @@ export default async function ReviewPage({
       </div>
       <Image
         src={review.image_url}
-        alt=""
+        alt={review.title}
         priority
-        width="640"
-        height="360"
+        width={640}
+        height={360}
         className="mb-2 rounded"
       />
       <article
         dangerouslySetInnerHTML={{ __html: review.body }}
         className="max-w-screen-sm prose prose-slate"
       />
+      
     </>
   );
 }

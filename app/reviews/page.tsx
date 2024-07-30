@@ -4,6 +4,7 @@ import { getReviews, getSearchableReviews } from "@/lib/review";
 import Image from "next/image";
 import Search from "@/components/Search";
 import Pagination from "@/components/Pagination";
+import CommentForm from "@/components/commentForm";
 
 export const revalidate = 3600;
 
@@ -48,6 +49,7 @@ export default async function Reviews({
           <li>No reviews found.</li>
         )}
       </ul>
+      
     </>
   );
 }
