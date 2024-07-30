@@ -6,7 +6,7 @@ import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-export const dynamic = "force-dynamic"
+// export const dynamic = "force-dynamic"
 
 interface ReviewPageProps {
   params: {
@@ -24,15 +24,15 @@ interface ReviewPageParams {
   slug: string;
 }
 
-export function generateMetadata({
-  params: { slug },
-}: {
-  params: { slug: string };
-}): { title: string } {
-  return {
-    title: slug,
-  };
-}
+// export function generateMetadata({
+//   params: { slug },
+// }: {
+//   params: { slug: string };
+// }): { title: string } {
+//   return {
+//     title: slug,
+//   };
+// }
 
 
 export default async function ReviewPage({
