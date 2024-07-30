@@ -1,54 +1,63 @@
-import AllComments from "@/components/Comment";
-import CommentForm from "@/components/commentForm";
-import { getReview } from "@/lib/review";
-import { ChatBubbleBottomCenterIcon } from "@heroicons/react/20/solid";
+import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-interface ReviewPageProps {
-  params: {
-    slug: string;
-  };
+import { getReview, getSlugs } from "@/lib/review";
+import Share from "@/components/Share";
+
+interface ReviewPageParams {
+  slug: string;
 }
 
-interface Review {
-  title: string;
-  image_url: string;
-  body: string;
+interface ReviewPageProps {
+  params: ReviewPageParams;
+}
+
+export async function generateStaticParams(): Promise<ReviewPageParams[]> {
+  const slugs = await getSlugs();
+  // console.log('[ReviewPage] generateStaticParams:', slugs);
+  return slugs.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({
+  params: { slug },
+}: ReviewPageProps): Promise<Metadata> {
+  const review = await getReview(slug);
+  if (!review) {
+    notFound();
+  }
+  return {
+    title: review.title,
+  };
 }
 
 export default async function ReviewPage({
   params: { slug },
 }: ReviewPageProps) {
-  const review: Review | null = await getReview(slug);
-
+  console.log("[ReviewPage] rendering", slug);
+  const review = await getReview(slug);
   if (!review) {
-    notFound(); // This will throw and prevent further code execution
-    return null; // Return null to satisfy TypeScript's return type expectations
+    notFound();
   }
-
   return (
     <>
-      <h1 className="font-bold">{review.title}</h1>
+      <h1>{review.title}</h1>
+      <p className="font-semibold pb-3">{review.title}</p>
+      <div className="flex gap-3 items-baseline">
+        <Share />
+      </div>
       <Image
-        priority
         src={review.image_url}
-        alt={review.title}
-        height={360}
-        width={640}
+        alt=""
+        priority
+        width="640"
+        height="360"
+        className="mb-2 rounded"
       />
       <article
-        className="pt-3 max-w-screen-sm"
         dangerouslySetInnerHTML={{ __html: review.body }}
+        className="max-w-screen-sm prose prose-slate"
       />
-      <section className="border-dashed border-t mt-4 p-4 bg-green-50 rounded-md shadow-lg max-w-screen-sm">
-        <h2 className="font-bold text-xl flex items-center gap-2 mb-4 text-green-700">
-          <ChatBubbleBottomCenterIcon className="h-5 w-5 text-green-700" />
-          Comments
-        </h2>
-        <CommentForm title={review.title} slug={slug} />
-        <AllComments slug={slug} />
-      </section>
     </>
   );
 }
