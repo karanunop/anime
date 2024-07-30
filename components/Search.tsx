@@ -4,9 +4,6 @@ import type { SearchableReview } from '@/lib/review';
 
 import {
   Combobox,
-  ComboboxInput,
-  ComboboxOption,
-  ComboboxOptions,
 } from "@headlessui/react";
 import { useState } from "react";
 
