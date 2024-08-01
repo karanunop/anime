@@ -35,7 +35,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ slug, title }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 p-4 bg-white rounded-md shadow-lg"
+      className="space-y-6 p-4 bg-white rounded-md shadow-lg max-w-screen-sm"
     >
       <h2 className="text-xl font-bold text-green-700">
         Already watched this {title}?

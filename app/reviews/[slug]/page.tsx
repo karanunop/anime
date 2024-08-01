@@ -3,6 +3,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getReview, getSlugs } from "@/lib/review";
 import Share from "@/components/Share";
+import CommentForm from "@/components/commentForm";
+import CommentList from "@/components/Comment";
 
 interface Review {
   title: string;
@@ -69,6 +71,9 @@ export default async function ReviewPage({
         dangerouslySetInnerHTML={{ __html: review.body }}
         className="max-w-screen-sm prose prose-slate"
       />
+      
+        <CommentForm title={review.title} slug={slug} />
+        <CommentList slug={slug} />
       
     </>
   );

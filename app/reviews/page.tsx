@@ -20,7 +20,7 @@ export default async function Reviews({
   searchParams: { page },
 }: reviewsProps) {
   const currentPage = checkPage(page);
-  const reviews = await getReviews("1", currentPage);
+  const reviews = await getReviews("8", currentPage);
   const searchable = await getSearchableReviews()
   return (
     <>

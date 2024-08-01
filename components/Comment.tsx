@@ -11,7 +11,7 @@ export default async function CommentList({ slug }: CommentListProps) {
     return <p className="italic mt-3">No comments yet.</p>;
   }
   return (
-    <ul className="border mt-3 rounded">
+    <ul className="border mt-3 rounded max-w-screen-sm">
       {comments.map((comment:any) => (
         <li
           key={comment.id}
