@@ -1,4 +1,5 @@
 import { createComments } from '@/lib/comment';
+import CommentList from './Comment';
 
 export interface CommentFormProps {
   slug: string;
@@ -47,5 +48,6 @@ export default function CommentForm({ slug, title }: CommentFormProps) {
         Submit
       </button>
     </form>
+    
   );
 }
