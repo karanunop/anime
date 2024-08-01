@@ -1,79 +1,51 @@
-"use client";
-import { action as createCommentAction } from "@/app/reviews/[slug]/createComment";
-import React, { useState, FormEvent } from "react";
+import { createComments } from '@/lib/comment';
 
-interface CommentFormProps {
-  title: string;
+export interface CommentFormProps {
   slug: string;
+  title: string;
 }
 
-interface FormState {
-  loading: boolean;
-  error: string | null;
-}
 
-const CommentForm: React.FC<CommentFormProps> = ({ slug, title }) => {
-  const [state, setState] = useState<FormState>({
-    loading: false,
-    error: null,
-  });
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setState({ loading: true, error: null });
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-    const result = await createCommentAction(formData);
-    if (result?.isError) {
-      setState({ loading: false, error: result.error });
-    } else {
-      form.reset();
-      setState({ loading: false, error: null });
-    }
-  };
+export default function CommentForm({ slug, title }: CommentFormProps) {
+  async function action(formData: FormData) {
+    'use server';
+    const comment = await createComments({
+      slug,
+      name: formData.get('user') as string,
+      comment: formData.get('message') as string,
+    });
+    console.log('created:', comment);
+  }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-6 p-4 bg-white rounded-md shadow-lg max-w-screen-sm"
-    >
-      <h2 className="text-xl font-bold text-green-700">
-        Already watched this {title}?
-      </h2>
-      <h3 className="text-lg font-semibold text-green-600">Have your say</h3>
-      <input type="hidden" name="slug" value={slug} />
-      {state.error && <p className="text-red-600">{state.error}</p>}
-      <div className="flex flex-col space-y-2">
-        <label htmlFor="name" className="text-green-700">
-          Your Name
+    
+    <form action={action}
+      className="border bg-white flex flex-col gap-2 mt-3 px-3 py-3 rounded">
+      <p className="pb-1">
+        Already played <strong>{title}</strong>? Have your say!
+      </p>
+      <div className="flex">
+        <label htmlFor="userField" className="shrink-0 w-32">
+          Your name
         </label>
-        <input
-          name="name"
-          type="text"
-          id="name"
-          className="p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+        <input id="userField" className="border px-2 py-1 rounded w-48" />
+        <input id="userField" name="user"
+          className="border px-2 py-1 rounded w-48"
         />
       </div>
-      <div className="flex flex-col space-y-2">
-        <label htmlFor="comment" className="text-green-700">
-          Comment
+      <div className="flex">
+        <label htmlFor="messageField" className="shrink-0 w-32">
+          Your comment
         </label>
-        <textarea
-          name="comment"
-          id="comment"
-          rows={4}
-          className="p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+        <textarea id="messageField" name="message"
+          className="border px-2 py-1 rounded w-full"
         />
       </div>
-      <button
-        disabled={state.loading}
-        type="submit"
-        className="px-4 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700 transition duration-300 disabled:cursor-not-allowed"
-      >
+      <button type="submit"
+        className="bg-orange-800 rounded px-2 py-1 self-center
+                   text-slate-50 w-32 hover:bg-orange-700">
         Submit
       </button>
     </form>
   );
-};
-
-export default CommentForm;
+}
