@@ -49,7 +49,7 @@ const fetchData = async (url: string): Promise<ApiResponse> => {
 };
 
 export async function getReview(slug: string): Promise<Review | null> {
-  const url = "https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=1&limit=25";
+  const url = "https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=1&limit=10";
   const data = await fetchData(url);
 
   const review = data.data
@@ -77,14 +77,14 @@ export const getReviews = async (pageSize: string, page: number): Promise<GetRev
 };
 
 export async function getSlugs(): Promise<string[]> {
-  const url = "https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=1&limit=25";
+  const url = "https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=1&limit=10";
   const data = await fetchData(url);
 
   return data.data.map((item) => generateSlug(item.title));
 }
 
 export async function getSearchableReviews(): Promise<SearchableReview[]> {
-  const url = "https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=1&limit=25";
+  const url = "https://api.jikan.moe/v4/top/anime?type=tv&filter=favorite&page=1&limit=10";
   const data = await fetchData(url);
 
   return data.data.map((item) => ({

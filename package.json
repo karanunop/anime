@@ -12,7 +12,9 @@
     "@heroicons/react": "^2.0.18",
     "@prisma/client": "^5.17.0",
     "axios": "^1.7.2",
+    "bcrypt": "^5.1.1",
     "gray-matter": "^4.0.3",
+    "jose": "^5.6.3",
     "marked": "^9.1.2",
     "next": "^14.0.0",
     "qs": "^6.11.2",
@@ -24,6 +26,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.8.9",
     "@types/qs": "^6.9.9",
     "@types/react": "^18.2.33",

@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getReview, getSlugs } from "@/lib/review";
+import { getReview } from "@/lib/review";
 import Share from "@/components/Share";
 import CommentForm from "@/components/commentForm";
 import CommentList from "@/components/Comment";
+import { Suspense } from "react";
+import { decodeEmail } from "@/lib/auth";
 
 interface Review {
   title: string;
@@ -19,32 +21,20 @@ interface ReviewPageParams {
 interface ReviewPageProps {
   params: ReviewPageParams;
 }
-const dynamic = "force-dynamic";
 
-// Function to generate static parameters for static site generation
-// export async function generateStaticParams(): Promise<ReviewPageParams[]> {
-//   const slugs = await getSlugs();
-//   return slugs.map((slug) => ({ slug }));
-// }
 
-// // Function to generate metadata for each review page
-// export async function generateMetadata({
-//   params: { slug },
-// }: ReviewPageProps): Promise<Metadata> {
-//   const review: Review | null = await getReview(slug);
-//   if (!review) {
-//     notFound();
-//   }
-//   return {
-//     title: review.title,
-//   };
-// }
+
+export const metadata: Metadata = {
+  title: "Reviews",
+};
+
 
 // Component for rendering the review page
 export default async function ReviewPage({
   params: { slug },
 }: ReviewPageProps) {
-  console.log("[ReviewPage] rendering", slug);
+  const token = await decodeEmail()
+  console.log("token", token)
   const review: Review | null = await getReview(slug);
 
   if (!review) {
@@ -54,7 +44,6 @@ export default async function ReviewPage({
 
   return (
     <>
-      <h1>{review.title}</h1>
       <p className="font-semibold pb-3">{review.title}</p>
       <div className="flex gap-3 items-baseline">
         <Share />
@@ -71,9 +60,18 @@ export default async function ReviewPage({
         dangerouslySetInnerHTML={{ __html: review.body }}
         className="max-w-screen-sm prose prose-slate"
       />
-      
-        <CommentForm title={review.title} slug={slug} />
-      <CommentList slug={review.title} />
+      {token ? (
+        <CommentForm title={review.title} slug={slug} userName={token.name} />
+      ) : (
+        <p className="text-red-500 italic text-lg">
+          
+          <a className="text-blue-600" href="/sign-in">sign</a> in to comment
+        </p>
+      )}
+
+      <Suspense fallback={<p>loading....</p>}>
+        <CommentList slug={slug} />
+      </Suspense>
     </>
   );
 }

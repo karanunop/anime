@@ -6,6 +6,7 @@ export interface CommentListProps {
 }
 
 export default async function CommentList({ slug }: CommentListProps) {
+  // await new Promise((resolve) => setTimeout(resolve, 3000))
   const comments = await getComments(slug);
   if (comments.length === 0) {
     return <p className="italic mt-3">No comments yet.</p>;
