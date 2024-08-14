@@ -69,9 +69,9 @@ export default async function ReviewPage({
         </p>
       )}
 
-      {/* <Suspense fallback={<p>loading....</p>}>
+      <Suspense fallback={<p>loading....</p>}>
         <CommentList slug={slug} />
-      </Suspense> */}
+      </Suspense>
     </>
   );
 }
