@@ -8,70 +8,66 @@ import CommentList from "@/components/Comment";
 import { Suspense } from "react";
 import { decodeEmail } from "@/lib/auth";
 
-interface Review {
-  title: string;
-  image_url: string;
-  body: string;
-}
-
-interface ReviewPageParams {
-  slug: string;
-}
-
 interface ReviewPageProps {
-  params: ReviewPageParams;
+  params: {
+    slug: string;
+  };
 }
-
-
 
 export const metadata: Metadata = {
   title: "Reviews",
 };
 
-
 // Component for rendering the review page
 export default async function ReviewPage({
   params: { slug },
 }: ReviewPageProps) {
-  const token = await decodeEmail()
-  console.log("token", token)
-  const review: Review | null = await getReview(slug);
+  try {
+    const review = await getReview(slug);
 
-  if (!review) {
+    if (!review) {
+      notFound();
+      return null;
+    }
+
+    const token = await decodeEmail();
+
+    return (
+      <>
+        <p className="font-semibold pb-3">{review.title}</p>
+        <div className="flex gap-3 items-baseline">
+          <Share />
+        </div>
+        <Image
+          src={review.image_url}
+          alt={review.title}
+          priority
+          width={640}
+          height={360}
+          className="mb-2 rounded"
+        />
+        <article
+          dangerouslySetInnerHTML={{ __html: review.body }}
+          className="max-w-screen-sm prose prose-slate"
+        />
+        {token ? (
+          <CommentForm title={review.title} slug={slug} userName={token.name} />
+        ) : (
+          <p className="text-red-500 italic text-lg">
+            <a className="text-blue-600" href="/sign-in">
+              Sign
+            </a>{" "}
+            in to comment
+          </p>
+        )}
+        <Suspense fallback={<p>Loading...</p>}>
+          <CommentList slug={slug} />
+        </Suspense>
+      </>
+    );
+  } catch (error) {
+    console.error("Error fetching review:", error);
     notFound();
-    return null; // Ensure we return null after notFound
+    return null;
   }
-
-  return (
-    <>
-      <p className="font-semibold pb-3">{review.title}</p>
-      <div className="flex gap-3 items-baseline">
-        <Share />
-      </div>
-      <Image
-        src={review.image_url}
-        alt={review.title}
-        priority
-        width={640}
-        height={360}
-        className="mb-2 rounded"
-      />
-      <article
-        dangerouslySetInnerHTML={{ __html: review.body }}
-        className="max-w-screen-sm prose prose-slate"
-      />
-      {token ? (
-        <CommentForm title={review.title} slug={slug} userName={token.name} />
-      ) : (
-        <p className="text-red-500 italic text-lg">
-          
-          <a className="text-blue-600" href="/sign-in">sign</a> in to comment
-        </p>
-      )}
-
-      <Suspense fallback={<p>loading....</p>}>
-        <CommentList slug={slug} />
-      </Suspense>
-    </>
-  );
 }
